@@ -6,6 +6,7 @@ import com.bastianweigand.demo.model.TodoList;
 import com.bastianweigand.demo.model.User;
 import com.bastianweigand.demo.service.TodoListService;
 import com.bastianweigand.demo.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,8 +37,11 @@ public class TodoListController {
     }
 
     @GetMapping("/todos/{id}")
-    public ResponseEntity<List<TodoDto>> getMyTodosInTodoList(@PathVariable Long id) {
+    public ResponseEntity<List<TodoDto>> getMyTodosInTodoList(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         TodoList todoList = todoListService.getTodoListById(id);
+        if (!todoList.getUser().getEmail().equals(userDetails.getUsername())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         List<TodoDto> todos = todoListService.getTodoByTodoList(todoList);
         return ResponseEntity.ok(todos);
     }

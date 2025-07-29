@@ -9,8 +9,9 @@ export default function TodoListModal({onClose}: { onClose: () => void }) {
         e.preventDefault()
         await api.post('/api/todolists', {
             title: title,
-        })
-        onClose()
+        }).then(() => {
+            onClose()
+        }).catch((e) => alert(e))
     }
 
     return (

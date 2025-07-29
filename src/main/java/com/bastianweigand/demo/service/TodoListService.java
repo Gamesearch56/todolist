@@ -2,11 +2,13 @@ package com.bastianweigand.demo.service;
 
 import com.bastianweigand.demo.dto.TodoDto;
 import com.bastianweigand.demo.dto.TodoListDto;
+import com.bastianweigand.demo.model.Todo;
 import com.bastianweigand.demo.model.TodoList;
 import com.bastianweigand.demo.model.User;
 import com.bastianweigand.demo.repository.TodoListRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -48,12 +50,14 @@ public class TodoListService {
 
     public List<TodoListDto> getTodoListsByUser(User user) {
         return user.getTodoLists().stream()
+                .sorted(Comparator.comparing(TodoList::getId))
                 .map(todoList -> new TodoListDto(todoList.getId(), todoList.getTitle()))
                 .toList();
     }
 
     public List<TodoDto> getTodoByTodoList(TodoList todoList) {
         return todoList.getTodos().stream()
+                .sorted(Comparator.comparing(Todo::getId))
                 .map(todo -> new TodoDto(
                         todo.getId(),
                         todo.getContent(),

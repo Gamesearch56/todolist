@@ -18,8 +18,8 @@ export default function TodoListOverview() {
         try {
             const res = await api.get('/api/todolists/me')
             setLists(res.data)
-        } catch (err: any) {
-            console.error('Failed to load lists: ' + err.message)
+        } catch (e) {
+            alert(e)
         }
     }
 
@@ -28,8 +28,9 @@ export default function TodoListOverview() {
     }, [])
 
     const handleDelete = async (id: number) => {
-        await api.delete(`/api/todolists/${id}`)
-        fetchLists()
+        await api.delete(`/api/todolists/${id}`).then(() => {
+            fetchLists()
+        })
     }
 
     return (

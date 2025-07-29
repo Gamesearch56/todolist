@@ -18,8 +18,9 @@ export default function TodoListDetails() {
     const navigate = useNavigate()
 
     const fetchTodos = async () => {
-        const res = await api.get(`/api/todolists/todos/${id}`)
-        setTodos(res.data)
+        await api.get(`/api/todolists/todos/${id}`).then(
+            (res) => setTodos(res.data),
+        ).catch((e) => alert(e))
     }
 
     const createTodo = async (e: React.FormEvent) => {
@@ -35,20 +36,27 @@ export default function TodoListDetails() {
             content: newTodo,
             done: false,
             dueDate: dueDate || null,
-        })
-        setNewTodo('')
-        setDueDate('')
-        fetchTodos()
+        }).then(() => {
+            setNewTodo('')
+            setDueDate('')
+            fetchTodos()
+        }).catch((e) => alert(e))
     }
 
-    const toggleDone = async (todoId: number, current: boolean) => {
-        await api.put(`/api/todos/${todoId}`, {done: !current})
-        fetchTodos()
+    const toggleDone = async (todoId: number, todo: Todo) => {
+        await api.put(`/api/todos/${todoId}`, {
+            content: todo.content,
+            done: !todo.done,
+            dueDate: todo.dueDate || null,
+        }).then(() => {
+            fetchTodos()
+        }).catch((e) => alert(e))
     }
 
     const deleteTodo = async (todoId: number) => {
-        await api.delete(`/api/todos/${todoId}`)
-        fetchTodos()
+        await api.delete(`/api/todos/${todoId}`).then(() => {
+            fetchTodos()
+        })
     }
 
     useEffect(() => {
@@ -68,14 +76,13 @@ export default function TodoListDetails() {
             </form>
             <ul className="todo-list">
                 {todos.map(todo => (
-                    <li className="todo-list-item" key={todo.id}>
-            <span
-                style={{textDecoration: todo.done ? 'line-through' : 'none', cursor: 'pointer'}}
-                onClick={() => toggleDone(todo.id, todo.done)}
-            >
-              {todo.content}
-                {todo.dueDate && ` (Due: ${todo.dueDate})`}
-            </span>
+                    <li className="todo-list-item" onClick={() => toggleDone(todo.id, todo)} key={todo.id}>
+                        <span
+                            style={{textDecoration: todo.done ? 'line-through' : 'none', cursor: 'pointer'}}
+                        >
+                          {todo.content}
+                            {todo.dueDate && ` (Due: ${todo.dueDate})`}
+                        </span>
                         <button onClick={() => deleteTodo(todo.id)}>🗑️</button>
                     </li>
                 ))}
