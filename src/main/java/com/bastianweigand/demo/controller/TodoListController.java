@@ -1,5 +1,6 @@
 package com.bastianweigand.demo.controller;
 
+import com.bastianweigand.demo.dto.TodoDto;
 import com.bastianweigand.demo.dto.TodoListDto;
 import com.bastianweigand.demo.model.TodoList;
 import com.bastianweigand.demo.model.User;
@@ -25,6 +26,22 @@ public class TodoListController {
         this.userService = userService;
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<List<TodoListDto>> getMyTodoLists(@AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails.getUsername();
+        User user = userService.findByEmail(email);
+
+        List<TodoListDto> todoLists = todoListService.getTodoListsByUser(user);
+        return ResponseEntity.ok(todoLists);
+    }
+
+    @GetMapping("/todos/{id}")
+    public ResponseEntity<List<TodoDto>> getMyTodosInTodoList(@PathVariable Long id) {
+        TodoList todoList = todoListService.getTodoListById(id);
+        List<TodoDto> todos = todoListService.getTodoByTodoList(todoList);
+        return ResponseEntity.ok(todos);
+    }
+
     @PostMapping
     public ResponseEntity<TodoList> createTodoList(@AuthenticationPrincipal UserDetails userDetails, @RequestBody TodoListDto todoListDto) {
         String email = userDetails.getUsername();
@@ -41,14 +58,5 @@ public class TodoListController {
     public ResponseEntity<?> deleteTodoList(@PathVariable Long id) {
         todoListService.deleteTodoList(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<List<TodoListDto>> getMyTodoLists(@AuthenticationPrincipal UserDetails userDetails) {
-        String email = userDetails.getUsername();
-        User user = userService.findByEmail(email);
-
-        List<TodoListDto> todoLists = todoListService.getTodoListsByUser(user);
-        return ResponseEntity.ok(todoLists);
     }
 }

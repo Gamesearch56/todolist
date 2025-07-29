@@ -1,12 +1,11 @@
 package com.bastianweigand.demo.controller;
 
+import com.bastianweigand.demo.dto.TodoDto;
 import com.bastianweigand.demo.model.Todo;
 import com.bastianweigand.demo.service.TodoService;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -19,15 +18,13 @@ public class TodoController {
         this.todoService = todoService;
     }
 
-    @PostMapping
+    @PostMapping("/{listId}")
     public ResponseEntity<?> createTodo(
-            @RequestParam Long listId,
-            @RequestParam String content,
-            @RequestParam(defaultValue = "false") boolean done,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date dueDate
+            @PathVariable Long listId,
+            @RequestBody TodoDto todoDto
     ) {
         try {
-            Todo todo = todoService.createTodo(listId, content, done, dueDate);
+            Todo todo = todoService.createTodo(listId, todoDto.getContent(), todoDto.isDone(), todoDto.getDueDate());
             return ResponseEntity.ok(todo);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -37,12 +34,10 @@ public class TodoController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateTodo(
             @PathVariable Long id,
-            @RequestParam String content,
-            @RequestParam(defaultValue = "false") boolean done,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date dueDate
+            @RequestBody TodoDto todoDto
     ) {
         try {
-            Todo todo = todoService.updateTodo(id, content, done, dueDate);
+            Todo todo = todoService.updateTodo(id, todoDto.getContent(), todoDto.isDone(), todoDto.getDueDate());
             return ResponseEntity.ok(todo);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

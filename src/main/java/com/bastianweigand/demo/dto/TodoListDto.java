@@ -17,6 +17,7 @@ public class TodoListDto {
     private List<TodoDto> todos;
 
     public TodoListDto(Long id, String title) {
-
+        this.id = id;
+        this.title = title;
     }
 }

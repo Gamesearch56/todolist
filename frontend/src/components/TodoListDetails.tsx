@@ -18,7 +18,7 @@ export default function TodoListDetails() {
     const navigate = useNavigate()
 
     const fetchTodos = async () => {
-        const res = await api.get(`/api/todos/list/${id}`)
+        const res = await api.get(`/api/todolists/todos/${id}`)
         setTodos(res.data)
     }
 
@@ -31,11 +31,10 @@ export default function TodoListDetails() {
             return
         }
 
-        await api.post(`/api/todos`, {
+        await api.post(`/api/todos/${id}`, {
             content: newTodo,
             done: false,
             dueDate: dueDate || null,
-            listId: id,
         })
         setNewTodo('')
         setDueDate('')
@@ -58,10 +57,12 @@ export default function TodoListDetails() {
 
     return (
         <div className="container">
-            <h2>Todo List #{id}</h2>
+            <h2>Todo List: #{id}</h2>
             <form onSubmit={createTodo}>
+                <p className="mb-0">Title</p>
                 <input type="text" placeholder="New Todo" value={newTodo} onChange={e => setNewTodo(e.target.value)}
                        required/>
+                <p className="mb-0">Due Date</p>
                 <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)}/>
                 <button type="submit">Add Todo</button>
             </form>
@@ -79,7 +80,7 @@ export default function TodoListDetails() {
                     </li>
                 ))}
             </ul>
-            <button onClick={() => navigate('/lists')} style={{marginTop: '1rem'}}>← Back</button>
+            <button onClick={() => navigate('/')} style={{marginTop: '1rem'}}>← Back</button>
         </div>
     )
 }

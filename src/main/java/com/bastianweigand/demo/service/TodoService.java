@@ -21,6 +21,10 @@ public class TodoService {
         this.listRepo = listRepo;
     }
 
+    public List<Todo> getTodosByList(Long listId) {
+        return todoRepo.findAllByTodoListIdOrderByIdAsc(listId);
+    }
+
     public Todo createTodo(Long listId, String content, boolean done, Date dueDate) {
         TodoList list = listRepo.findById(listId)
                 .orElseThrow(() -> new RuntimeException("TodoList not found"));
@@ -67,9 +71,5 @@ public class TodoService {
             throw new RuntimeException("Todo not found");
         }
         todoRepo.deleteById(id);
-    }
-
-    public List<Todo> getTodosByList(Long listId) {
-        return todoRepo.findAllByTodoListId(listId);
     }
 }

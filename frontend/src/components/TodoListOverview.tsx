@@ -42,7 +42,7 @@ export default function TodoListOverview() {
             {lists && lists.length > 0 ? (
                 <ul className="todo-list">
                     {lists.map(list => (
-                        <li className="todo-list-item" key={list.id} onClick={() => navigate(`/lists/${list.id}`)}>
+                        <li className="todo-list-item" key={list.id} onClick={() => navigate(`/${list.id}`)}>
                             {list.title}
                             <button onClick={(e) => {
                                 e.stopPropagation()

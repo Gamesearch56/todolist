@@ -1,5 +1,6 @@
 package com.bastianweigand.demo.service;
 
+import com.bastianweigand.demo.dto.TodoDto;
 import com.bastianweigand.demo.dto.TodoListDto;
 import com.bastianweigand.demo.model.TodoList;
 import com.bastianweigand.demo.model.User;
@@ -15,6 +16,11 @@ public class TodoListService {
 
     public TodoListService(TodoListRepository todoListRepo) {
         this.todoListRepo = todoListRepo;
+    }
+
+    public TodoList getTodoListById(Long id) {
+        return todoListRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("TodoList not found"));
     }
 
     public TodoList createTodoList(User user, String title) {
@@ -46,7 +52,14 @@ public class TodoListService {
                 .toList();
     }
 
-    public List<TodoList> getTodoListsByUser(Long userId) {
-        return todoListRepo.findAllByUserId(userId);
+    public List<TodoDto> getTodoByTodoList(TodoList todoList) {
+        return todoList.getTodos().stream()
+                .map(todo -> new TodoDto(
+                        todo.getId(),
+                        todo.getContent(),
+                        todo.isDone(),
+                        todo.getDueDate()
+                ))
+                .toList();
     }
 }
